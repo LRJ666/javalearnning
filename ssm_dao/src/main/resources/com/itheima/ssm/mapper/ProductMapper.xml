@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.mapper.ProductMapper">
+    <select id="queryProductList" resultType="product">
+          select
+          id,
+          productNum,
+          productName,
+          cityName,
+          departureTime,
+          productPrice,
+          productDesc,
+          productStatus
+          from product
+    </select>
+
+      <insert id="saveProduct" parameterType="product">
+            <!--在insert into之前查询序列值-->
+            <selectKey order="BEFORE" keyProperty="id" resultType="long">
+                  SELECT seq_product.NEXTVAL FROM dual
+            </selectKey>
+            INSERT INTO product
+            VALUES(#{id},#{productNum},#{productName},#{cityName},#{departureTime},#{productPrice},#{productDesc},#{productStatus})
+      </insert>
+
+
+      <select id="queryProductById" parameterType="long" resultType="product">
+             select
+                id,
+                productNum,
+                productName,
+                cityName,
+                departureTime,
+                productPrice,
+                productDesc,
+                productStatus
+                from product
+                where id=#{id}
+      </select>
+
+
+      <update id="updateProduct" parameterType="product">
+            update product
+                set productNum=#{productNum},productName=#{productName},cityName=#{cityName},
+                departureTime=#{departureTime},productPrice=#{productPrice},productDesc=#{productDesc},
+                productStatus=#{productStatus} where id=#{id}
+      </update>
+
+
+    <delete id="deleteProducts" parameterType="long[]" >
+        delete from product
+        <foreach collection="array" open="where id in(" close=")" item="item" separator=",">
+          #{item}
+        </foreach>
+    </delete>
+
+
+    <select id="queryProductCount" resultType="long">
+        select count(id) from product
+    </select>
+
+    <!--分页查询-->
+    <select id="queryProductListPage" parameterType="map" resultType="product">
+        SELECT id,
+                productNum,
+                productName,
+                cityName,
+                departureTime,
+                productPrice,
+                productDesc,
+                productStatus
+            FROM (SELECT a.*,ROWNUM rn FROM (SELECT * FROM product)a)b
+              WHERE rn BETWEEN (#{pageNum}-1)*#{pageSize}+1  AND #{pageNum}*#{pageSize}
+    </select>
+</mapper>

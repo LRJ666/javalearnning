@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.mapper.PermissionMapper">
+    <!--查询全部权限数据-->
+    <select id="queryPermissionList" resultType="syspermission">
+        select id,permissionName,url,pid from sys_permission
+    </select>
+
+
+    <!--查询一级菜单数据-->
+    <select id="queryParentPermissionList" resultType="syspermission">
+        select id,permissionName,url,pid from sys_permission where pid=0
+    </select>
+
+
+    <!--保存权限-->
+    <insert id="savePermission" parameterType="syspermission">
+        <selectKey order="BEFORE" keyProperty="id" resultType="long">
+            select seq_sys_permission.nextval from dual
+        </selectKey>
+        insert into sys_permission(id,permissionName,url,pid)
+          values (#{id},#{permissionName},#{url},#{pid})
+    </insert>
+</mapper>
