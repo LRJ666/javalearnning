@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.mapper.OrdersMapper">
+    <select id="queryOrdersList" resultMap="ordersProductMap">
+          select o.id,
+               o.ordernum,
+               o.ordertime,
+               o.peoplecount,
+               o.orderdesc,
+               o.paytype,
+               o.orderstatus,
+               o.productid,
+               p.productname
+          from orders o
+          left join product p
+            on o.productid = p.id
+    </select>
+
+    <resultMap id="ordersProductMap" type="orders">
+        <!--两部分数据：原生基础订单数据+关联的产品数据-->
+        <id column="id" property="id"/>
+        <result column="ordernum" property="orderNum"/>
+        <result column="ordertime" property="orderTime"/>
+        <result column="peoplecount" property="peopleCount"/>
+        <result column="orderdesc" property="orderDesc"/>
+        <result column="paytype" property="payType"/>
+        <result column="orderstatus" property="orderStatus"/>
+
+        <!--关联的产品数据-->
+        <association property="product" javaType="product">
+            <id column="productid" property="id"/>
+            <result column="productname" property="productName"/>
+        </association>
+    </resultMap>
+
+
+      <insert id="saveOrders" parameterType="orders">
+            <selectKey order="BEFORE" keyProperty="id" resultType="long">
+                  SELECT seq_orders.NEXTVAL FROM dual
+            </selectKey>
+            insert into orders values(#{id},#{orderNum},#{orderTime},#{peopleCount},#{orderDesc},#{payType},#{orderStatus},#{product.id})
+      </insert>
+</mapper>
